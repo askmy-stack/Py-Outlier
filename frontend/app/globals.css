@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #ff7200;
+}
+
+body {
+  background-color: #08071d;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+}
+
+@layer components {
+  .glass {
+    @apply bg-white/[0.04] backdrop-blur-xl border border-white/[0.08] rounded-xl;
+  }
+
+  .btn-brand {
+    @apply bg-brand text-white font-semibold px-6 py-3 rounded-lg
+           hover:bg-orange-500 active:scale-95 transition-all duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .input-field {
+    @apply w-full bg-dark-card border border-dark-border rounded-lg px-4 py-3
+           text-white placeholder-white/30 outline-none
+           focus:border-brand focus:ring-1 focus:ring-brand transition-colors;
+  }
+}

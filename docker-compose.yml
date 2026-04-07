@@ -1,0 +1,87 @@
+version: "3.9"
+
+services:
+  # ── Redis (broker + result backend for Celery) ────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ── FastAPI Backend ────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - MODEL_IMAGE_PATH=/models/image
+      - MODEL_VIDEO_PATH=/models/video
+      - DEBUG=${DEBUG:-false}
+      - ALLOWED_ORIGINS=http://localhost:3000
+    volumes:
+      - ./Image Anomaly Detection-2:/models/image:ro
+      - ./Video Anomaly Detection:/models/video:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Celery Worker (video processing) ──────────────────────────────────────
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: celery -A app.workers.tasks worker --loglevel=info --concurrency=2 -Q video
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - MODEL_IMAGE_PATH=/models/image
+      - MODEL_VIDEO_PATH=/models/video
+    volumes:
+      - ./Image Anomaly Detection-2:/models/image:ro
+      - ./Video Anomaly Detection:/models/video:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # ── Next.js Frontend ──────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # ── MLflow Tracking Server ────────────────────────────────────────────────
+  mlflow:
+    image: python:3.11-slim
+    command: >
+      bash -c "pip install mlflow --quiet &&
+               mlflow server --host 0.0.0.0 --port 5000
+               --backend-store-uri /mlruns
+               --default-artifact-root /mlruns"
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlruns
+
+volumes:
+  mlflow_data:
