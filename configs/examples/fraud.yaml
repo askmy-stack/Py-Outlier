@@ -1,0 +1,12 @@
+dataset:
+  id: credit_card_fraud
+  target_column: Class
+preprocessing:
+  scaler: standard
+model:
+  name: isolation_forest
+  params:
+    contamination: 0.05
+    random_state: 42
+output:
+  report_path: reports/fraud_run.json

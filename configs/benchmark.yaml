@@ -1,0 +1,2 @@
+preprocessing:
+  scaler: standard

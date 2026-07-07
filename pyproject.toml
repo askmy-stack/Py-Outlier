@@ -30,6 +30,7 @@ dev = [
 
 [project.scripts]
 detect = "anomaly_detection.cli.detect:main"
+benchmark = "anomaly_detection.cli.benchmark:main"
 serve = "anomaly_detection.api.app:run"
 
 [tool.setuptools.packages.find]

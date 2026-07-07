@@ -107,14 +107,12 @@ def main(argv: list[str] | None = None) -> int:
     plot_path_value = output_config.get("plot_path")
     if plot_path_value:
         labels = None
-        target_column = config.get("dataset", {}).get("target_column")
-        if target_column:
-            from anomaly_detection.data_ingestion.loader import load_csv
+        dataset_config = config.get("dataset", {})
+        target_column = dataset_config.get("target_column")
+        if target_column and (dataset_config.get("path") or dataset_config.get("id")):
+            from anomaly_detection.data_ingestion.loader import load_dataset_from_config
 
-            _, labels_array, _ = load_csv(
-                config["dataset"]["path"],
-                target_column=target_column,
-            )
+            _, labels_array, _ = load_dataset_from_config(dataset_config)
             labels = labels_array.tolist() if labels_array is not None else None
 
         _write_plot(

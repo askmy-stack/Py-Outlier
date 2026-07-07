@@ -8,7 +8,7 @@ from typing import Any
 import numpy as np
 
 from anomaly_detection.config.loader import load_config
-from anomaly_detection.data_ingestion.loader import load_csv
+from anomaly_detection.data_ingestion.loader import load_dataset_from_config
 from anomaly_detection.evaluation.metrics import compute_metrics, metrics_to_dict
 from anomaly_detection.models.registry import create_detector_from_config
 from anomaly_detection.preprocessing.scaler import apply_scaler
@@ -20,18 +20,19 @@ def run_detection(
     data: np.ndarray | None = None,
     labels: np.ndarray | None = None,
     feature_names: list[str] | None = None,
+    quick: bool = False,
 ) -> dict[str, Any]:
     """Fit a detector and return predictions, scores, and optional metrics."""
     dataset_config = config.get("dataset", {})
-    target_column = dataset_config.get("target_column")
 
     if data is None:
-        dataset_path = dataset_config.get("path")
-        if not dataset_path:
-            raise ValueError("Config must include dataset.path when data is not provided")
-        features, loaded_labels, loaded_feature_names = load_csv(
-            dataset_path,
-            target_column=target_column,
+        if not dataset_config.get("path") and not dataset_config.get("id"):
+            raise ValueError(
+                "Config must include dataset.path or dataset.id when data is not provided"
+            )
+        features, loaded_labels, loaded_feature_names = load_dataset_from_config(
+            dataset_config,
+            quick=quick,
         )
         if labels is None:
             labels = loaded_labels

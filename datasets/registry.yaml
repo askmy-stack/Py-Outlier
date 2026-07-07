@@ -1,2 +1,30 @@
-# Dataset registry placeholder — populated in Phase 4.
-datasets: []
+datasets:
+  - id: credit_card_fraud
+    domain: tabular
+    source: openml
+    openml_name: creditcard
+    openml_version: 1
+    url: https://www.openml.org/d/1597
+    license: CC-BY-4.0
+    labeled: true
+    target_column: Class
+    description: European card transactions, highly imbalanced
+
+  - id: nab
+    domain: timeseries
+    source: numenta
+    url: https://github.com/numenta/NAB
+    license: AGPL-3.0
+    labeled: true
+    target_column: label
+    description: Numenta Anomaly Benchmark time-series collection
+
+  - id: ucf_crime
+    domain: vision
+    source: local
+    local_notebook: examples/notebooks/image-anomaly-detection-2.ipynb
+    url: https://www.crcv.ucf.edu/projects/real-world/
+    license: Custom (academic use)
+    labeled: true
+    target_column: label
+    description: Multiclass crime video frames (existing repo notebook work)

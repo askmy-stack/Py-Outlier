@@ -1,11 +1,39 @@
-"""CSV data loading utilities."""
+"""Dataset loading facade for pipeline and CLI."""
 
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import numpy as np
-import pandas as pd
+
+from anomaly_detection.data_ingestion.loaders.csv_loader import CSVLoader
+from anomaly_detection.data_ingestion.loaders.registry_loader import RegistryLoader
+from anomaly_detection.data_ingestion.utils import frame_to_arrays
+
+
+def load_dataset_from_config(
+    dataset_config: dict[str, Any],
+    *,
+    quick: bool = False,
+) -> tuple[np.ndarray, np.ndarray | None, list[str]]:
+    """Load features and labels from dataset.path or dataset.id."""
+    target_column = dataset_config.get("target_column")
+
+    if dataset_config.get("id"):
+        loader = RegistryLoader(dataset_config["id"], quick=quick)
+        entry_target = loader.entry.target_column
+        effective_target = target_column or entry_target
+        frame = loader.load()
+        return frame_to_arrays(frame, target_column=effective_target)
+
+    dataset_path = dataset_config.get("path")
+    if not dataset_path:
+        raise ValueError("Config must include dataset.path or dataset.id")
+
+    loader = CSVLoader(dataset_path, target_column=target_column)
+    frame = loader.load()
+    return frame_to_arrays(frame, target_column=target_column)
 
 
 def load_csv(
@@ -13,22 +41,6 @@ def load_csv(
     target_column: str | None = None,
 ) -> tuple[np.ndarray, np.ndarray | None, list[str]]:
     """Load feature matrix and optional labels from a CSV file."""
-    csv_path = Path(path)
-    if not csv_path.exists():
-        raise FileNotFoundError(f"Dataset not found: {csv_path}")
-
-    frame = pd.read_csv(csv_path)
-    if frame.empty:
-        raise ValueError(f"Dataset is empty: {csv_path}")
-
-    labels: np.ndarray | None = None
-    feature_frame = frame
-    if target_column:
-        if target_column not in frame.columns:
-            raise ValueError(f"Target column '{target_column}' not found in {csv_path}")
-        labels = frame[target_column].to_numpy()
-        feature_frame = frame.drop(columns=[target_column])
-
-    feature_names = list(feature_frame.columns)
-    features = feature_frame.to_numpy(dtype=float)
-    return features, labels, feature_names
+    loader = CSVLoader(path, target_column=target_column)
+    frame = loader.load()
+    return frame_to_arrays(frame, target_column=target_column)
