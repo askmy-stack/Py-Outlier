@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -55,14 +56,19 @@ def _run_single(
         "model": _default_model_config(detector_name),
         "preprocessing": base_config.get("preprocessing", {"scaler": "standard"}),
     }
+    if "fairness" in base_config:
+        config["fairness"] = base_config["fairness"]
     report = run_detection(config, quick=quick)
-    return {
+    result = {
         "dataset": dataset_id,
         "detector": detector_name,
         "n_samples": report["n_samples"],
         "n_anomalies": report["n_anomalies"],
         "metrics": report.get("metrics", {}),
     }
+    if "fairness_metrics" in report:
+        result["fairness_metrics"] = report["fairness_metrics"]
+    return result
 
 
 def run_benchmark(
@@ -106,7 +112,9 @@ def run_benchmark(
     reports_dir = Path(output_dir) if output_dir else REPO_ROOT / "reports"
     reports_dir.mkdir(parents=True, exist_ok=True)
     report_path = reports_dir / f"benchmark_{timestamp}.md"
+    json_path = reports_dir / f"benchmark_{timestamp}.json"
     report_path.write_text(_format_markdown(results, quick=quick), encoding="utf-8")
+    json_path.write_text(_format_json(results, quick=quick), encoding="utf-8")
     return report_path
 
 
@@ -137,4 +145,35 @@ def _format_markdown(results: list[dict[str, Any]], *, quick: bool) -> str:
             )
         )
     lines.append("")
+    fairness_rows = [row for row in results if row.get("fairness_metrics")]
+    if fairness_rows:
+        lines.extend(
+            [
+                "## Fairness metrics",
+                "",
+                "| Dataset | Detector | Attribute | Demographic parity | Equalized odds |",
+                "| --- | --- | --- | ---: | ---: |",
+            ]
+        )
+        for row in fairness_rows:
+            fairness = row["fairness_metrics"]
+            for attribute, metrics in fairness.get("attributes", {}).items():
+                lines.append(
+                    "| {dataset} | {detector} | {attribute} | {dpd} | {eod} |".format(
+                        dataset=row["dataset"],
+                        detector=row["detector"],
+                        attribute=attribute,
+                        dpd=_metric_value(metrics, "demographic_parity_difference"),
+                        eod=_metric_value(metrics, "equalized_odds_difference"),
+                    )
+                )
+        lines.append("")
     return "\n".join(lines)
+
+
+def _format_json(results: list[dict[str, Any]], *, quick: bool) -> str:
+    payload = {
+        "mode": "quick" if quick else "full",
+        "runs": results,
+    }
+    return json.dumps(payload, indent=2) + "\n"

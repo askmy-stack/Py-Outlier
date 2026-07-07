@@ -34,6 +34,9 @@ vision = [
     "opencv-python-headless>=4.9",
     "pillow>=10.0",
 ]
+fairness = [
+    "aif360>=0.6",
+]
 dev = [
     "pytest>=8.0",
     "ruff>=0.3",
