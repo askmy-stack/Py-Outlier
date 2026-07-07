@@ -1,21 +1,18 @@
-# Default configuration for anomaly detection pipeline.
-# Full schema and validation arrive in later phases.
-
-project:
-  name: anomaly-detection
-  seed: 42
-
-data:
-  registry: datasets/registry.yaml
-
+dataset:
+  path: data/sample.csv
+  target_column: label
 preprocessing:
-  scale: standard
-
-models:
-  default: isolation_forest
-
-evaluation:
-  metrics:
-    - precision
-    - recall
-    - f1
+  scaler: standard
+model:
+  name: isolation_forest
+  params:
+    contamination: 0.05
+    random_state: 42
+output:
+  report_path: reports/run.json
+  plot_path: reports/anomalies.png
+llm:
+  enabled: false
+  prompt_path: configs/prompts/anomaly_report.yaml
+  model: claude-3-5-haiku-20241022
+  max_tokens: 1024

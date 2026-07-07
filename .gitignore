@@ -31,6 +31,9 @@ coverage.xml
 # Data (raw datasets stay local)
 data/raw/
 
+# Generated reports and plots
+reports/
+
 # Model artifacts (large binaries)
 *.pb
 *.h5

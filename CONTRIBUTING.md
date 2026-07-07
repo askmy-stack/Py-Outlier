@@ -31,6 +31,26 @@ Thank you for your interest in contributing to anomaly-detection!
 
 3. Open a pull request against `main` with a clear description of the change.
 
+## Phase labels
+
+Work is organized in stacked phases aligned with [docs/EXECUTION_PLAN.md](docs/EXECUTION_PLAN.md). When opening issues or pull requests, apply the matching label when applicable:
+
+| Label | Phase focus |
+| --- | --- |
+| `good first issue` | Small, well-scoped starter tasks |
+| `phase-1` | Foundation — package skeleton, CI |
+| `phase-2` | Detectors and model registry |
+| `phase-3` | CLI and REST API |
+| `phase-4` | Dataset registry |
+| `phase-5` | Streaming detection |
+| `phase-6` | Root-cause analysis |
+| `phase-7` | Vision domain (UCF) |
+| `phase-8` | Fairness metrics and mitigation |
+| `phase-9` | Generative models and LLM explainability |
+| `phase-10` | Tutorials, profiling, governance |
+
+Prefer small PRs that map to a single phase when possible.
+
 ## Pull request requirements
 
 - CI must pass (ruff + pytest).

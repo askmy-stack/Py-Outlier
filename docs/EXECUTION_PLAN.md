@@ -65,7 +65,7 @@ Each phase is **self-contained** — paste one phase into a new chat and execute
 
 ---
 
-## Phase 1: Foundation — Clean-up, Package Layout, Honest Docs
+## Phase 1: Foundation — Clean-up, Package Layout, Honest Docs (COMPLETED — PR [#3](https://github.com/askmy-stack/anomaly-detection/pull/3))
 
 **Goal:** Runnable Python package skeleton, aligned README, governance files, CI green on lint+test.
 
@@ -149,7 +149,7 @@ Replace aspirational claims with:
 
 ---
 
-## Phase 2: Unified Detector API & Baseline Algorithms
+## Phase 2: Unified Detector API & Baseline Algorithms (COMPLETED — PR [#5](https://github.com/askmy-stack/anomaly-detection/pull/5))
 
 **Goal:** Pluggable detectors with `fit()`, `score()`, `predict()` for tabular/time-series data.
 
@@ -220,7 +220,7 @@ Create `src/anomaly_detection/config/loader.py` using `yaml.safe_load`.
 
 ---
 
-## Phase 3: CLI & REST API
+## Phase 3: CLI & REST API (COMPLETED — PR [#7](https://github.com/askmy-stack/anomaly-detection/pull/7))
 
 **Goal:** `python -m anomaly_detection.cli.detect --config configs/default.yaml` and FastAPI service.
 
@@ -266,7 +266,7 @@ Do **not** port crime-classification `/analyze/image` until Phase 7 (vision doma
 
 ---
 
-## Phase 4: Dataset Registry & Multi-Domain Loaders
+## Phase 4: Dataset Registry & Multi-Domain Loaders (COMPLETED — PR [#9](https://github.com/askmy-stack/anomaly-detection/pull/9))
 
 **Goal:** Centralized dataset metadata + download/preprocess scripts.
 
@@ -331,7 +331,7 @@ Implement: `loaders/openml_loader.py`, `loaders/csv_loader.py`, `loaders/ucf_loa
 
 ---
 
-## Phase 5: Streaming & Resource Efficiency (PySAD)
+## Phase 5: Streaming & Resource Efficiency (PySAD) (COMPLETED — PR [#11](https://github.com/askmy-stack/anomaly-detection/pull/11))
 
 **Goal:** Online anomaly detection for streams with bounded memory.
 
@@ -369,7 +369,7 @@ class BaseStreamingDetector(ABC):
 
 ---
 
-## Phase 6: Root Cause Analysis (PyRCA)
+## Phase 6: Root Cause Analysis (PyRCA) (COMPLETED — PR [#13](https://github.com/askmy-stack/anomaly-detection/pull/13))
 
 **Goal:** Post-detection causal explanation for multivariate metrics.
 
@@ -403,7 +403,7 @@ class BaseStreamingDetector(ABC):
 
 ---
 
-## Phase 7: Vision Domain Module (Preserve Existing Work)
+## Phase 7: Vision Domain Module (Preserve Existing Work) (COMPLETED — PR [#15](https://github.com/askmy-stack/anomaly-detection/pull/15))
 
 **Goal:** Integrate existing UCF crime notebooks/models as `examples/vision/` + optional API.
 
@@ -435,9 +435,11 @@ Port PR branch endpoints as `/vision/analyze/image` and `/vision/analyze/video` 
 - Label clearly: UCF module is **supervised classification**, not unsupervised AD.
 - Do not conflate crime classes with generic "anomaly score."
 
+**Phase 7 implementation note:** SavedModels remain at the repository root (`Image Anomaly Detection-2/`, `Video Anomaly Detection/`). Configure paths via `configs/examples/vision.yaml`. Install optional `[vision]` extras for TensorFlow/OpenCV.
+
 ---
 
-## Phase 8: Fairness & Bias Analysis (AIF360)
+## Phase 8: Fairness & Bias Analysis (AIF360) (COMPLETED — PR [#17](https://github.com/askmy-stack/anomaly-detection/pull/17))
 
 **Goal:** Measure whether detection disproportionately flags protected groups.
 
@@ -471,7 +473,7 @@ JSON report section: `fairness_metrics` appended to benchmark output.
 
 ---
 
-## Phase 9: Generative Models, LLMs & Multimodal
+## Phase 9: Generative Models, LLMs & Multimodal (COMPLETED — PR [#19](https://github.com/askmy-stack/anomaly-detection/pull/19))
 
 **Goal:** Advanced detection and natural-language explanations.
 
@@ -510,7 +512,7 @@ JSON report section: `fairness_metrics` appended to benchmark output.
 
 ---
 
-## Phase 10: Governance, Tutorials & Performance Profiling
+## Phase 10: Governance, Tutorials & Performance Profiling (COMPLETED — PR [#21](https://github.com/askmy-stack/anomaly-detection/pull/21))
 
 **Goal:** Community-ready project with domain tutorials and profiling.
 
@@ -543,7 +545,7 @@ Create `docs/tutorials/`:
 
 ---
 
-## Phase 11: Final Verification & Release
+## Phase 11: Final Verification & Release (COMPLETED — PR [#23](https://github.com/askmy-stack/anomaly-detection/pull/23))
 
 ### 11.1 Full test matrix
 
@@ -553,6 +555,7 @@ mypy src --ignore-missing-imports   # optional
 pytest tests/ -v --cov=anomaly_detection
 python -m anomaly_detection.cli.detect --config configs/default.yaml
 python -m anomaly_detection.cli.benchmark --quick
+python -m anomaly_detection.cli.benchmark --quick --profile
 ```
 
 ### 11.2 Anti-pattern grep
@@ -565,16 +568,16 @@ git grep -i "TBD" -- README.md      # replace all [TBD] placeholders
 
 ### 11.3 Documentation audit
 
-- [ ] README matches implemented features per phase completed
-- [ ] All registry datasets have license field
-- [ ] API docs at `/docs` match actual routes
-- [ ] CHANGELOG.md for v0.1.0 release
+- [x] README matches implemented features per phase completed
+- [x] All registry datasets have license field
+- [x] API routes documented in README (matches `/docs` OpenAPI)
+- [x] CHANGELOG.md for v1.0.0 release
 
 ### 11.4 Release
 
-- Tag `v0.1.0` after Phase 3 (minimal viable framework)
-- Tag `v0.5.0` after Phase 7 (vision + tabular)
-- Tag `v1.0.0` after Phase 11
+- Tag `v0.1.0` after Phase 3 (minimal viable framework) — see [docs/RELEASE.md](RELEASE.md)
+- Tag `v0.5.0` after Phase 7 (vision + tabular) — see [docs/RELEASE.md](RELEASE.md)
+- Tag `v1.0.0` after Phase 11 merge — **do not tag until PRs are merged**; instructions in [docs/RELEASE.md](RELEASE.md)
 
 ---
 

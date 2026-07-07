@@ -1,0 +1,6 @@
+# UCF vision classification config (supervised multi-class, NOT unsupervised AD)
+vision:
+  image_model_path: "Image Anomaly Detection-2"
+  video_model_path: "Video Anomaly Detection"
+  max_frames: 16
+  max_upload_mb: 50

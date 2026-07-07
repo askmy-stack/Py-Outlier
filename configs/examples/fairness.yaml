@@ -1,0 +1,17 @@
+dataset:
+  path: tests/fixtures/fairness_sample.csv
+  target_column: Class
+preprocessing:
+  scaler: standard
+model:
+  name: isolation_forest
+  params:
+    contamination: 0.1
+    random_state: 42
+fairness:
+  protected_attributes:
+    - gender
+    - age_group
+  mitigation: reweighing
+output:
+  report_path: reports/fairness_run.json

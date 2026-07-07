@@ -1,0 +1,21 @@
+stream:
+  max_window: 100
+  min_window: 5
+model:
+  name: zscore_window
+  params:
+    max_window: 100
+    min_window: 5
+input:
+  source: csv
+  path: data/sample.csv
+  columns:
+    - feature_1
+    - feature_2
+    - feature_3
+monitoring:
+  track_memory: false
+alerts:
+  enabled: false
+  threshold: 3.0
+  slack_webhook_url: null

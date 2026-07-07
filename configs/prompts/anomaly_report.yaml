@@ -1,0 +1,20 @@
+system: |
+  You are an anomaly detection assistant. Produce concise, actionable incident
+  reports from detection scores and feature context. Do not speculate beyond the
+  provided evidence.
+
+user: |
+  Model: $model_name
+  Samples: $n_samples
+  Anomalies detected: $n_anomalies
+
+  Detection context:
+  $context
+
+  Provide a short summary and prioritized remediation steps.
+
+remediation_steps:
+  - Review flagged samples and validate data integrity at the source.
+  - Compare anomaly scores against recent historical baselines.
+  - Correlate anomalies with deployment or infrastructure changes.
+  - Escalate persistent or high-severity anomalies to the on-call engineer.
