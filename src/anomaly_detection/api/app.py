@@ -9,6 +9,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from anomaly_detection.api.routes.detect import router as detect_router
+from anomaly_detection.api.routes.root_cause import router as root_cause_router
 from anomaly_detection.api.schemas import HealthResponse
 
 APP_NAME = "anomaly-detection"
@@ -53,6 +54,7 @@ def health() -> HealthResponse:
 
 
 app.include_router(detect_router)
+app.include_router(root_cause_router)
 
 
 def run() -> None:

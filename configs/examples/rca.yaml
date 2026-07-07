@@ -1,0 +1,22 @@
+# Example RCA configuration for multivariate metric root-cause analysis.
+#
+# Metrics columns should be time-aligned observability signals (latency, error rate,
+# queue depth, etc.). The API accepts metrics as JSON: column name -> value list.
+
+rca:
+  top_k: 3
+  use_pyrca: false  # set true when pyrca optional dep is installed
+  corr_threshold: 0.3
+
+metrics:
+  columns:
+    - request_latency_ms
+    - error_rate
+    - queue_depth
+    - cpu_utilization
+    - db_connection_pool
+
+# Synthetic chain example (A -> B -> C) for local testing:
+#   A: upstream service latency
+#   B: API gateway latency (lags A)
+#   C: client-visible p99 (lags B)

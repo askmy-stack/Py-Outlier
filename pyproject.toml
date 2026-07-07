@@ -26,6 +26,9 @@ streaming = [
     "pysad>=0.3",
     "psutil>=5.9",
 ]
+rca = [
+    "pyrca>=1.0",
+]
 dev = [
     "pytest>=8.0",
     "ruff>=0.3",
