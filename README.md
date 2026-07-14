@@ -153,6 +153,12 @@ Start the server with `serve` (or `uvicorn anomaly_detection.api.app:app`). Inte
 
 **Note:** Vision endpoints perform **supervised multi-class classification**, not unsupervised anomaly detection. They are intentionally separate from `/detect`.
 
+### Authentication
+
+All routes above except `/health`, `/docs`, `/redoc`, and `/openapi.json` require
+an `X-API-Key` header matching `ANOMALY_API_KEY` when that env var is set. Leave
+it unset for local/dev use (no auth required).
+
 ## Benchmark results (quick mode, fixtures)
 
 Run `benchmark --quick` locally to reproduce. Representative results on test fixtures:
