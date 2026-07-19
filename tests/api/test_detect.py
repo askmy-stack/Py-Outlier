@@ -97,3 +97,36 @@ def test_max_detect_rows_ignores_invalid_values(monkeypatch: pytest.MonkeyPatch)
 
     monkeypatch.setenv("MAX_DETECT_ROWS", "-5")
     assert _max_detect_rows() == DEFAULT_MAX_DETECT_ROWS
+
+
+def test_default_config_path_is_absolute_and_package_relative() -> None:
+    """DEFAULT_CONFIG_PATH must not depend on the process CWD (issue #32)."""
+    from anomaly_detection.api.routes.detect import DEFAULT_CONFIG_PATH
+
+    assert DEFAULT_CONFIG_PATH.is_absolute()
+    assert DEFAULT_CONFIG_PATH.name == "default.yaml"
+    assert DEFAULT_CONFIG_PATH.is_file()
+
+
+def test_default_config_loads_regardless_of_cwd(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """Loading the default config must work even when CWD has no configs/ dir."""
+    from anomaly_detection.api.routes.detect import _default_config
+
+    monkeypatch.chdir(tmp_path)
+    config = _default_config()
+
+    assert isinstance(config, dict)
+    assert "model" in config
+
+
+def test_detect_endpoint_works_with_unrelated_cwd(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    """The /detect endpoint must resolve its config even from an arbitrary CWD."""
+    monkeypatch.chdir(tmp_path)
+
+    frame = pd.read_csv(SAMPLE_DATA).drop(columns=["label"])
+    payload = {"data": frame.head(20).values.tolist()}
+    response = client.post("/detect", json=payload)
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["n_samples"] == 20

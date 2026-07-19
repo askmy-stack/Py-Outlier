@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import io
 import os
+from pathlib import Path
 from typing import Annotated, Any
 
 import numpy as np
@@ -18,7 +19,10 @@ from anomaly_detection.pipeline import _deep_merge, run_detection
 
 router = APIRouter(tags=["detect"])
 
-DEFAULT_CONFIG_PATH = "configs/default.yaml"
+# Resolved relative to this file (repo_root/src/anomaly_detection/api/routes/detect.py)
+# rather than the process CWD, so the API works no matter where it's launched from.
+REPO_ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_CONFIG_PATH = REPO_ROOT / "configs" / "default.yaml"
 DEFAULT_MAX_DETECT_ROWS = 100_000
 
 
